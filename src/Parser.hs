@@ -6,7 +6,7 @@ import Control.Applicative
 import Types
 
 
-data Parser a = Parser { parse :: String -> [(a, String)] }
+data Parser a = Parser { parseWith :: String -> [(a, String)] }
 
 
 instance Functor Parser where
@@ -18,17 +18,15 @@ instance Applicative Parser where
 
 instance Monad Parser where
     return = pure
-    p >>= f = Parser $ \s -> concatMap (\(x, r) -> parse (f x) r) $ parse p s 
+    p >>= f = Parser $ \s -> concatMap (\(x, r) -> parseWith (f x) r) $ parseWith p s 
 
 instance Alternative Parser where
     empty = failure
     p1 <|> p2 = Parser $ \s ->
-        case parse p1 s of 
-        []  -> parse p2 s
+        case parseWith p1 s of 
+        []  -> parseWith p2 s
         res -> res
 
-runParser :: Parser a -> String -> a
-runParser = undefined -- TODO
 
 -- representation of a _failure_ parser
 -- not that this is different from pure []
@@ -76,9 +74,135 @@ rmWhitespace = (zeroOrMore wsp) >>= (\_ -> return "") where wsp = (charp ' ' <|>
 trim :: Parser a -> Parser a
 trim p = rmWhitespace >>= (\_ -> p >>= (\r -> rmWhitespace >>= (\_ -> return r)))
 
+-- apply charp once
+once :: Char -> Parser String
+once c = (charp c) >>= (\_ -> return "")
+
+-- apply charp twice
+twice :: Char -> Parser String
+twice c = (once c) >>= (\_ -> once c) >>= (\_ -> return "")
 
 -- numeric parser
 numericp = trim $ oneOrMore $ fromPredicate isDigit
 
 -- token parser
 tokenp = trim $ oneOrMore $ fromPredicate isAlpha
+
+
+
+-- CONSTRUCT INTERNAL ADT REPRESENTATION OF PROGRAMS
+
+
+-- Parse Expression
+exprp :: Parser Expr
+exprp = equalp <|> smallerp <|> arithmeticp
+
+
+-- Arithmetic parser
+arithmeticp :: Parser Expr
+arithmeticp = multp <|> addp <|> subp <|> valuep <|> symbolp
+
+-- Value parser
+valuep :: Parser Expr
+valuep = numericp >>= (\v -> return (Value (read v :: Int)))
+
+-- Symbol parser
+symbolp :: Parser Expr
+symbolp = tokenp >>= (\v -> return (Symbol v))
+
+-- Mult parser
+multp :: Parser Expr
+multp = do
+    v1 <- valuep <|> symbolp
+    _ <- once '*'
+    v2 <- valuep <|> symbolp
+    return $ Mult v1 v2
+
+-- Add parser
+addp :: Parser Expr
+addp = do
+    v1 <- valuep <|> symbolp
+    _ <- once '+'
+    v2 <- valuep <|> symbolp
+    return $ Add v1 v2
+
+-- Sub parser
+subp :: Parser Expr
+subp = do
+    v1 <- valuep <|> symbolp
+    _ <- once '-'
+    v2 <- valuep <|> symbolp
+    return $ Sub v1 v2
+
+-- Equal parser
+equalp :: Parser Expr
+equalp = do
+    v1 <- arithmeticp
+    _ <- twice '='
+    v2 <- arithmeticp
+    return $ Equal v1 v2
+
+-- Smaller parser
+smallerp :: Parser Expr
+smallerp = do
+    v1 <- arithmeticp
+    _ <- once '<'
+    v2 <- arithmeticp
+    return $ Smaller v1 v2
+
+
+-- Parse Programs
+progp :: Parser Prog
+progp = assgnp <|> ifp <|> whilep <|> retp
+
+
+-- Sequence parser
+seqp :: Parser Prog
+seqp = do
+    p1 <- progp
+    p2 <- seqp <|> progp
+    return $ Seq p1 p2
+
+-- parse assignment
+assgnp :: Parser Prog
+assgnp = do
+    t <- tokenp
+    _ <- once '='
+    e <- exprp
+    _ <- trim $ once ';'
+    return $ Eq t e
+
+-- If parser
+ifp :: Parser Prog
+ifp = do
+    _ <- trim $ stringp "if "
+    _ <- once '('
+    c <- exprp -- condition
+    _ <- trim $ stringp ") then {"
+    pt <- seqp <|> progp
+    _ <- trim $ stringp "} else {"
+    pe <- seqp <|> progp 
+    _ <- trim $ stringp "}"
+    return $ If c pt pe
+
+-- While parser
+whilep :: Parser Prog
+whilep = do
+    _ <- trim $ stringp "while "
+    _ <- once '('
+    c <- exprp -- condition
+    _ <- trim $ stringp ") {"
+    p <- seqp <|> progp
+    _ <- trim $ stringp "}"
+    return $ While c p
+
+-- Return parser
+retp :: Parser Prog
+retp = do
+    _ <- trim $ stringp "return "
+    e <- exprp -- returned expression
+    _ <- trim $ once ';'
+    return $ Return e
+
+
+
