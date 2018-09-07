@@ -1,17 +1,36 @@
 module Main where
 
 import Control.Applicative
+import System.Environment (getArgs)
+
 import Types
 import Parser
+import Interpreter
 
 -- parser main
-runParser :: String -> Maybe Prog
+runParser :: String -> Possibly Prog
 runParser s = case parseWith (seqp <|> progp) s of 
-    [(prog, "")] -> Just prog
-    _            -> Nothing
+    [(prog, "")] -> pure prog
+    _            -> fail "Syntax error(s)"
 
-path = "../tests/raw_input/test5-5.unvar.in"
+-- eval main
+runEval :: Prog -> Possibly Int
+runEval p = do
+    c' <- evalProg p []
+    res <- getFrom c' "$"
+    return res
+
+
+-- raw (parse -> eval)
+runRaw :: String -> Possibly Int
+runRaw s = do
+    p <- runParser s
+    r <- runEval p
+    return r
+
+
 main :: IO ()
 main = do
-    p <- readFile path
-    putStrLn $ show $ runParser p
+    a <- getArgs
+    p <- readFile $ head a
+    putStrLn $ show $ runRaw p
