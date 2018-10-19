@@ -29,7 +29,7 @@ instance Alternative Parser where
 
 
 -- representation of a _failure_ parser
--- not that this is different from pure []
+-- note that this is different from pure []
 failure :: Parser a
 failure = Parser $ \s -> []
 
