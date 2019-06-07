@@ -9,7 +9,7 @@ import Interpreter
 
 -- parser main
 runParser :: String -> Possibly Prog
-runParser s = case parseWith (seqp <|> progp) s of 
+runParser s = case parseWith (seqp <|> progp) s of
     [(prog, "")] -> pure prog
     _            -> fail "Syntax error(s)"
 
@@ -17,20 +17,18 @@ runParser s = case parseWith (seqp <|> progp) s of
 runEval :: Prog -> Possibly Int
 runEval p = do
     c' <- evalProg p []
-    res <- getFrom c' "$"
-    return res
+    getFrom c' "$"
 
 
 -- raw (parse -> eval)
 runRaw :: String -> Possibly Int
 runRaw s = do
     p <- runParser s
-    r <- runEval p
-    return r
+    runEval p
 
 
 main :: IO ()
 main = do
     a <- getArgs
     p <- readFile $ head a
-    putStrLn $ show $ runRaw p
+    print $ runRaw p

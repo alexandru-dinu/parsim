@@ -6,7 +6,7 @@ import Types
 type Context = [Variable]
 type Variable = (String, Int)
 
-data Possibly a = P (Either String a) deriving Show
+newtype Possibly a = P (Either String a) deriving Show
 
 instance Functor Possibly where
     fmap f (P res) = case res of
@@ -18,7 +18,7 @@ instance Applicative Possibly where
     (P res) <*> x = case res of
         Right f -> fmap f x
         Left m  -> P $ Left m
-   
+
 instance Monad Possibly where
     return = pure
     fail m = P $ Left m
@@ -30,7 +30,7 @@ instance Monad Possibly where
 getFrom :: Context -> String -> Possibly Int
 getFrom [] "$" = fail "Missing return"
 getFrom [] _ = fail "Uninitialized variable"
-getFrom ((x, v):cs) s = if (x == s) then pure v else getFrom cs s 
+getFrom ((x, v):cs) s = if x == s then pure v else getFrom cs s
 
 -- evaluate expressions
 evalExpr :: Expr -> Context -> Possibly Int
@@ -56,12 +56,12 @@ evalExpr (Mult e1 e2) context = do
 evalExpr (Equal e1 e2) context = do
     r1 <- evalExpr e1 context
     r2 <- evalExpr e2 context
-    return $ if (r1 == r2) then 1 else 0
+    return $ if r1 == r2 then 1 else 0
 
 evalExpr (Smaller e1 e2) context = do
     r1 <- evalExpr e1 context
     r2 <- evalExpr e2 context
-    return $ if (r1 < r2) then 1 else 0
+    return $ if r1 < r2 then 1 else 0
 
 
 -- evaluate programs
@@ -73,18 +73,15 @@ evalProg (Eq var expr) context = do
 
 evalProg (If cond pt pe) context = do
     c <- evalExpr cond context
-    context' <- if c == 1 then evalProg pt context else evalProg pe context
-    return $ context'
+    if c == 1 then evalProg pt context else evalProg pe context
 
 evalProg (While cond p) context = do
     c <- evalExpr cond context
-    context' <- case c of 
-        1 -> do 
+    case c of
+        1 -> do
             c' <- evalProg p context
-            c'' <- evalProg (While cond p) c'
-            return c''
+            evalProg (While cond p) c'
         _ -> return context
-    return context'
 
 evalProg (Return expr) context = do
     res <- evalExpr expr context
@@ -92,5 +89,4 @@ evalProg (Return expr) context = do
 
 evalProg (Seq p1 p2) context = do
     c' <- evalProg p1 context
-    c'' <- evalProg p2 c'
-    return $ c''
+    evalProg p2 c'

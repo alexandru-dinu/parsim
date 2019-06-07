@@ -1,3 +1,5 @@
+{-# LANGUAGE LambdaCase #-}
+
 module Parser where
 
 import Data.Char
@@ -18,12 +20,12 @@ instance Applicative Parser where
 
 instance Monad Parser where
     return = pure
-    p >>= f = Parser $ \s -> concatMap (\(x, r) -> parseWith (f x) r) $ parseWith p s 
+    p >>= f = Parser $ \s -> concatMap (\(x, r) -> parseWith (f x) r) $ parseWith p s
 
 instance Alternative Parser where
     empty = failure
     p1 <|> p2 = Parser $ \s ->
-        case parseWith p1 s of 
+        case parseWith p1 s of
         []  -> parseWith p2 s
         res -> res
 
@@ -35,8 +37,7 @@ failure = Parser $ \s -> []
 
 -- consume a char (move _cursor_ one pos the right)
 move :: Parser Char
-move = Parser $ \s ->
-    case s of
+move = Parser $ \case
     []     -> []
     (c:cs) -> [(c, cs)]
 
@@ -64,7 +65,7 @@ zeroOrMore p = oneOrMore p <|> pure []
 -- consume the given char from a string
 -- don't store it, since we won't need it
 consume :: Char -> Parser String
-consume c = (oneOrMore $ charp c) >>= (\_ -> return "") 
+consume c = (oneOrMore $ charp c) >>= (\_ -> return "")
 
 -- whitespace = [ \t\n]
 rmWhitespace :: Parser String
@@ -181,7 +182,7 @@ ifp = do
     _ <- trim $ stringp ") then {"
     pt <- seqp <|> progp
     _ <- trim $ stringp "} else {"
-    pe <- seqp <|> progp 
+    pe <- seqp <|> progp
     _ <- trim $ stringp "}"
     return $ If c pt pe
 
