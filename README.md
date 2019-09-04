@@ -1,4 +1,4 @@
-# haskell-imp
+# Haskell Monadic Parser 
 
 Monadic parser for a simple imperative language. Mainly implemented to study functors, applicatives, monads.
 
@@ -32,3 +32,7 @@ data Prog = Eq String Expr
           | While Expr Prog
           | Return Expr deriving (Show, Read)
 ```
+
+### Resources
+
+[G. Hutton, E. Meijer - Monadic Parsing in Haskell](http://www.cs.nott.ac.uk/~pszgmh/pearl.pdf)
