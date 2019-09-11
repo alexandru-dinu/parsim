@@ -1,4 +1,4 @@
-# Haskell Monadic Parser 
+# Monadic Parser 
 
 Monadic parser for a simple imperative language. Mainly implemented to study functors, applicatives, monads.
 
