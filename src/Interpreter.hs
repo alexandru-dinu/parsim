@@ -21,10 +21,12 @@ instance Applicative Possibly where
 
 instance Monad Possibly where
     return = pure
-    fail m = P $ Left m
     (P res) >>= f = case res of
         Left m  -> fail m
         Right r -> f r
+
+instance MonadFail Possibly where
+    fail m = P $ Left m
 
 
 getFrom :: Context -> String -> Possibly Int
