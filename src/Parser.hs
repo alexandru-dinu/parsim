@@ -84,9 +84,11 @@ twice :: Char -> Parser String
 twice c = (once c) >>= (\_ -> once c) >>= (\_ -> return "")
 
 -- numeric parser
+numericp :: Parser String
 numericp = trim $ oneOrMore $ fromPredicate isDigit
 
 -- token parser
+tokenp :: Parser String
 tokenp = trim $ oneOrMore $ fromPredicate isAlpha
 
 
