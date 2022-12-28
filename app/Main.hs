@@ -1,11 +1,11 @@
 module Main where
 
-import Control.Applicative
-import System.Environment (getArgs)
+import Control.Applicative ( Alternative((<|>)) )
+import System.Environment ( getArgs )
 
-import Types
-import Parser
-import Interpreter
+import Types ( Prog )
+import Parser ( progp, seqp, Parser(parseWith) )
+import Interpreter ( evalProg, getFrom, Possibly )
 
 -- parser main
 runParser :: String -> Possibly Prog

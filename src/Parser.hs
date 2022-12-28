@@ -2,10 +2,10 @@
 
 module Parser where
 
-import Data.Char
-import Control.Applicative
+import Data.Char ( isDigit, isAlpha )
+import Control.Applicative ( Alternative((<|>), empty) )
 
-import Types
+import Types ( Prog(..), Expr(..) )
 
 
 data Parser a = Parser { parseWith :: String -> [(a, String)] }
@@ -33,7 +33,7 @@ instance Alternative Parser where
 -- representation of a _failure_ parser
 -- note that this is different from pure []
 failure :: Parser a
-failure = Parser $ \s -> []
+failure = Parser $ \_ -> []
 
 -- consume a char (move _cursor_ one pos the right)
 move :: Parser Char
@@ -43,7 +43,7 @@ move = Parser $ \case
 
 -- construct a char parser from a predicate
 fromPredicate :: (Char -> Bool) -> Parser Char
-fromPredicate pred = move >>= (\c -> if pred c then return c else failure)
+fromPredicate p = move >>= (\c -> if p c then return c else failure)
 
 -- char parser - match a char c
 charp :: Char -> Parser Char
