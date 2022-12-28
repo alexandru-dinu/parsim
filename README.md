@@ -1,5 +1,7 @@
 # Monadic Parser
 
+[![Build](https://github.com/alexandru-dinu/monadic-parser/actions/workflows/build.yml/badge.svg)](https://github.com/alexandru-dinu/monadic-parser/actions/workflows/build.yml)
+
 Monadic parser for a simple imperative language. Mainly implemented to study functors, applicatives, monads.
 
 ## Grammar

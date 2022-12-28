@@ -6,9 +6,10 @@ type Context = [Variable]
 
 type Variable = (String, Int)
 
+-- TODO: get rid of this as it is ambiguous
 newtype Possibly a =
     P (Either String a)
-    deriving (Show)
+    deriving (Eq, Show)
 
 instance Functor Possibly where
     fmap f (P res) =

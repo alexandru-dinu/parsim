@@ -1,7 +1,7 @@
 PROJECT_NAME=monadic-parser
 INPUT=
 
-.PHONY: build run hindent
+.PHONY: build run hindent hlint test
 
 build:
 	stack build
@@ -14,3 +14,6 @@ hindent:
 
 hlint:
 	$@ ./
+
+test:
+	stack $@

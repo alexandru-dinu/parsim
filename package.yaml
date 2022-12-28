@@ -48,7 +48,7 @@ executables:
 
 tests:
   monadic-parser-test:
-    main:                Spec.hs
+    main:                Test.hs
     source-dirs:         test
     ghc-options:
     - -threaded
@@ -56,3 +56,4 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - monadic-parser
+    - HUnit
