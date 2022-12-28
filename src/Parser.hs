@@ -2,48 +2,57 @@
 
 module Parser where
 
-import Data.Char ( isDigit, isAlpha )
-import Control.Applicative ( Alternative((<|>), empty) )
+import Control.Applicative (Alternative((<|>), empty))
+import Data.Char (isAlpha, isDigit)
 
-import Types ( Prog(..), Expr(..) )
+import Types (Expr(..), Prog(..))
 
-
-data Parser a = Parser { parseWith :: String -> [(a, String)] }
-
+newtype Parser a =
+    Parser
+        { parseWith :: String -> [(a, String)]
+        }
 
 instance Functor Parser where
     fmap f (Parser p) = Parser $ \s -> [(f a, rest) | (a, rest) <- p s]
 
 instance Applicative Parser where
     pure x = Parser $ \s -> [(x, s)]
-    (Parser p1) <*> (Parser p2) = Parser $ \s -> [(f x, r2) | (f, r1) <- p1 s, (x, r2) <- p2 r1]
+    (Parser p1) <*> (Parser p2) =
+        Parser $ \s -> [(f x, r2) | (f, r1) <- p1 s, (x, r2) <- p2 r1]
 
 instance Monad Parser where
     return = pure
-    p >>= f = Parser $ \s -> concatMap (\(x, r) -> parseWith (f x) r) $ parseWith p s
+    p >>= f =
+        Parser $ \s -> concatMap (\(x, r) -> parseWith (f x) r) $ parseWith p s
 
 instance Alternative Parser where
     empty = failure
-    p1 <|> p2 = Parser $ \s ->
-        case parseWith p1 s of
-        []  -> parseWith p2 s
-        res -> res
-
+    p1 <|> p2 =
+        Parser $ \s ->
+            case parseWith p1 s of
+                [] -> parseWith p2 s
+                res -> res
 
 -- representation of a _failure_ parser
 -- note that this is different from pure []
 failure :: Parser a
-failure = Parser $ \_ -> []
+failure = Parser $ const []
 
 -- consume a char (move _cursor_ one pos the right)
 move :: Parser Char
-move = Parser $ \case
-    []     -> []
-    (c:cs) -> [(c, cs)]
+move =
+    Parser $ \case
+        [] -> []
+        (c:cs) -> [(c, cs)]
 
 -- construct a char parser from a predicate
 fromPredicate :: (Char -> Bool) -> Parser Char
-fromPredicate p = move >>= (\c -> if p c then return c else failure)
+fromPredicate p =
+    move >>=
+    (\c ->
+         if p c
+             then return c
+             else failure)
 
 -- char parser - match a char c
 charp :: Char -> Parser Char
@@ -51,12 +60,12 @@ charp c = fromPredicate (== c)
 
 -- string parser - match a given string
 stringp :: String -> Parser String
-stringp ""  = Parser $ \s -> [("", s)]
-stringp (n:ns) = (charp n) >>= (\c -> (stringp ns) >>= (\r -> return (c:r)))
+stringp "" = Parser $ \s -> [("", s)]
+stringp (n:ns) = charp n >>= (\c -> stringp ns >>= (\r -> return (c : r)))
 
 -- (+) quantifier
 oneOrMore :: Parser a -> Parser [a]
-oneOrMore p = p >>= (\v -> (zeroOrMore p) >>= (\v' -> return (v:v')))
+oneOrMore p = p >>= (\v -> zeroOrMore p >>= (\v' -> return (v : v')))
 
 -- (*) quantifier
 zeroOrMore :: Parser a -> Parser [a]
@@ -65,23 +74,25 @@ zeroOrMore p = oneOrMore p <|> pure []
 -- consume the given char from a string
 -- don't store it, since we won't need it
 consume :: Char -> Parser String
-consume c = (oneOrMore $ charp c) >>= (\_ -> return "")
+consume c = oneOrMore (charp c) >> return ""
 
 -- whitespace = [ \t\n]
 rmWhitespace :: Parser String
-rmWhitespace = (zeroOrMore wsp) >>= (\_ -> return "") where wsp = (charp ' ' <|> charp '\n')
+rmWhitespace = zeroOrMore wsp >> return ""
+  where
+    wsp = charp ' ' <|> charp '\n'
 
 -- apply parser p to a trimmed string
 trim :: Parser a -> Parser a
-trim p = rmWhitespace >>= (\_ -> p >>= (\r -> rmWhitespace >>= (\_ -> return r)))
+trim p = rmWhitespace >> p >>= (\r -> rmWhitespace >> return r)
 
 -- apply charp once
 once :: Char -> Parser String
-once c = (charp c) >>= (\_ -> return "")
+once c = charp c >> return ""
 
 -- apply charp twice
 twice :: Char -> Parser String
-twice c = (once c) >>= (\_ -> once c) >>= (\_ -> return "")
+twice c = once c >> once c >> return ""
 
 -- numeric parser
 numericp :: Parser String
@@ -91,15 +102,10 @@ numericp = trim $ oneOrMore $ fromPredicate isDigit
 tokenp :: Parser String
 tokenp = trim $ oneOrMore $ fromPredicate isAlpha
 
-
-
 -- CONSTRUCT INTERNAL ADT REPRESENTATION OF PROGRAMS
-
-
 -- Parse Expression
 exprp :: Parser Expr
 exprp = equalp <|> smallerp <|> arithmeticp
-
 
 -- Arithmetic parser
 arithmeticp :: Parser Expr
@@ -111,7 +117,7 @@ valuep = numericp >>= (\v -> return (Value (read v :: Int)))
 
 -- Symbol parser
 symbolp :: Parser Expr
-symbolp = tokenp >>= (\v -> return (Symbol v))
+symbolp = tokenp >>= return . Symbol
 
 -- Mult parser
 multp :: Parser Expr
@@ -153,11 +159,9 @@ smallerp = do
     v2 <- arithmeticp
     return $ Smaller v1 v2
 
-
 -- Parse Programs
 progp :: Parser Prog
 progp = assgnp <|> ifp <|> whilep <|> retp
-
 
 -- Sequence parser
 seqp :: Parser Prog
