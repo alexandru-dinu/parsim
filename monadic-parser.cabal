@@ -53,6 +53,7 @@ test-suite monadic-parser-test
   type: exitcode-stdio-1.0
   main-is: Test.hs
   other-modules:
+      TestUtils
       Paths_monadic_parser
   hs-source-dirs:
       test

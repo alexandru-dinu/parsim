@@ -1,41 +1,32 @@
-import Data.List (sort)
-import qualified Data.Text as T
 import System.Exit (ExitCode(..), exitSuccess, exitWith)
-import System.FilePath.Glob (glob)
 import Test.HUnit
 
-import Runner (runRaw)
+import Runner (runEval, runRaw)
+import TestUtils (mkPairs, mkTest)
+import Types (Prog)
 
-strip :: String -> String
-strip = T.unpack . T.strip . T.pack
-
-mkPairs :: IO [(FilePath, FilePath)]
-mkPairs = do
-    inpFiles <- glob "testdata/raw/*.in"
-    outFiles <- glob "testdata/raw/*.out"
-    return $ zip (sort inpFiles) (sort outFiles)
-
-mkTest :: FilePath -> FilePath -> IO Test
-mkTest inputFile outputFile = do
-    input <- readFile inputFile
-    expected <- readFile outputFile
-    let actual = runRaw input
-    let res =
-            assertEqual
-                "Output does not match expected value"
-                (strip expected)
-                (show actual)
-    return $ TestCase res
-
-testPairs :: IO Test
-testPairs = do
-    pairs <- mkPairs
-    tests <- mapM (uncurry mkTest) pairs
+testRaw :: IO Test
+testRaw = do
+    pairs <- mkPairs "testdata/raw/"
+    tests <- mapM (uncurry (mkTest getResult)) pairs
     return $ TestList tests
+  where
+    getResult :: String -> String
+    getResult = show . runRaw
+
+testAdt :: IO Test
+testAdt = do
+    pairs <- mkPairs "testdata/adt/"
+    tests <- mapM (uncurry (mkTest getResult)) pairs
+    return $ TestList tests
+  where
+    getResult :: String -> String
+    getResult inp = (show . runEval) (read inp :: Prog)
 
 main :: IO ()
 main = do
-    res <- testPairs >>= runTestTT
-    if errors res + failures res == 0
+    resRaw <- testRaw >>= runTestTT
+    resAdt <- testAdt >>= runTestTT
+    if all (== 0) [f x | f <- [errors, failures], x <- [resRaw, resAdt]]
         then exitSuccess
         else exitWith (ExitFailure 1)

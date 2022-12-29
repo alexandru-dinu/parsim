@@ -1,7 +1,5 @@
 Main
 
-testdata/adt
-
 *~
 *.lock
 dist
