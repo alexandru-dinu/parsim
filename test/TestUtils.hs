@@ -22,5 +22,5 @@ mkTest runner inputFile outputFile = do
     input <- readFile inputFile
     expected <- readFile outputFile
     let actual = runner input
-    let res = assertEqual "Output does not match expected value" (strip expected) actual
+    let res = assertEqual ("Error given " ++ inputFile) (strip expected) actual
     return $ TestCase res
