@@ -1,4 +1,4 @@
-module Runner where
+module Runner (runParser, runEval, runRaw) where
 
 import Control.Applicative (Alternative((<|>)))
 

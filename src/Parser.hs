@@ -1,6 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 
-module Parser where
+module Parser (Parser(..), progp, seqp) where
 
 import Control.Applicative (Alternative((<|>), empty))
 import Data.Char (isAlpha, isDigit)
@@ -72,8 +72,8 @@ zeroOrMore p = oneOrMore p <|> pure []
 
 -- consume the given char from a string
 -- don't store it, since we won't need it
-consume :: Char -> Parser String
-consume c = oneOrMore (charp c) >> return ""
+-- consume :: Char -> Parser String
+-- consume c = oneOrMore (charp c) >> return ""
 
 -- whitespace = [ \t\n]
 rmWhitespace :: Parser String

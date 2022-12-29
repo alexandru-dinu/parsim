@@ -1,4 +1,4 @@
-module Types where
+module Types (Expr(..), Prog(..)) where
 
 data Expr
     = Add Expr Expr

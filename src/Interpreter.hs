@@ -1,4 +1,4 @@
-module Interpreter where
+module Interpreter (Possibly, getFrom, evalExpr, evalProg) where
 
 import Types
 
