@@ -22,8 +22,7 @@ instance Applicative Parser where
 
 instance Monad Parser where
     return = pure
-    p >>= f =
-        Parser $ \s -> concatMap (\(x, r) -> parseWith (f x) r) $ parseWith p s
+    p >>= f = Parser $ \s -> concatMap (\(x, r) -> parseWith (f x) r) $ parseWith p s
 
 instance Alternative Parser where
     empty = failure

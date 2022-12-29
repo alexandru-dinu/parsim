@@ -11,7 +11,7 @@ runParser :: String -> Possibly Prog
 runParser s =
     case parseWith (seqp <|> progp) s of
         [(prog, "")] -> pure prog
-        _ -> fail "Syntax error(s)"
+        _ -> fail "Syntax error"
 
 -- eval main
 runEval :: Prog -> Possibly Int

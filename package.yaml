@@ -57,3 +57,5 @@ tests:
     dependencies:
     - monadic-parser
     - HUnit
+    - Glob
+    - text

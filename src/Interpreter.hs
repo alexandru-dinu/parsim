@@ -6,10 +6,11 @@ type Context = [Variable]
 
 type Variable = (String, Int)
 
--- TODO: get rid of this as it is ambiguous
+-- | Define this as a "wrapper" over Either
+-- | to manually define {Functor, Applicative, Monad} instances.
 newtype Possibly a =
     P (Either String a)
-    deriving (Eq, Show)
+    deriving (Eq, Show, Read)
 
 instance Functor Possibly where
     fmap f (P res) =
