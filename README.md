@@ -19,7 +19,9 @@ Implemented mainly to study {functors, applicatives, monads} and to set up a pro
 ```
 The corresponding **ADT** is defined in [Types.hs](./src/Types.hs).
 
-## Example
+Currently supporting only integer values (`Int` type).
+
+## Examples
 Given the following program (defined in `testdata/raw/test1-10.in`):
 ```
 y = 1 * 2;
@@ -41,6 +43,12 @@ you can use `make run INPUT=testdata/raw/test1-10.in` to run it, obtaining the f
 P (Right 11)
 ```
 which indicates a successful run.
+
+You can also write an immediate short program, like this:
+```
+make run INPUT=<(echo "x = 23; y = x - 17; return x * y;")
+```
+Output: `P (Right 138)`.
 
 ## Errors
 
