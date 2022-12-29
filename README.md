@@ -2,20 +2,20 @@
 
 [![Build](https://github.com/alexandru-dinu/monadic-parser/actions/workflows/build.yml/badge.svg)](https://github.com/alexandru-dinu/monadic-parser/actions/workflows/build.yml)
 
-Monadic parser for a simple imperative language. 
+Monadic parser for a simple imperative language.
 Implemented mainly to study {functors, applicatives, monads} and to set up a proper haskell project.
 
 ## Grammar
 ```
-<expr>      ::= <expr> <op> <expr> | <symbol> | <value>
-<symbol>    ::= [a-zA-Z]+
-<value>     ::= [1-9][0-9]* | 0
-<op>        ::= + | - | * | == | <
-<prog>      ::= <symbol> = <expr>;
-            | <prog> <prog>
-            | if (<expr>) then {<prog>} else {<prog>}
-            | while (<expr>) {<prog>}
-            | return <expr>;
+<expr>   ::= <expr> <op> <expr> | <symbol> | <value>
+<symbol> ::= [a-zA-Z]+
+<value>  ::= [1-9][0-9]* | 0
+<op>     ::= + | - | * | == | <
+<prog>   ::= <symbol> = <expr>;
+           | <prog> <prog>
+           | if (<expr>) then {<prog>} else {<prog>}
+           | while (<expr>) {<prog>}
+           | return <expr>;
 ```
 The corresponding **ADT** is defined in [Types.hs](./src/Types.hs).
 
