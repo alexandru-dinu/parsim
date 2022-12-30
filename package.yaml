@@ -49,7 +49,7 @@ executables:
 tests:
   monadic-parser-test:
     main:                Test.hs
-    source-dirs:         test
+    source-dirs:         tests
     ghc-options:
     - -threaded
     - -rtsopts
