@@ -5,6 +5,8 @@ import tempfile
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
+EXECUTABLE = "parsim-exe"
+
 NUM_VALUES = 2
 OPS = ["+", "-", "*"]
 MIN_VALUE = 0
@@ -40,7 +42,7 @@ def test_expression(expr):
         f.write(f"return {expr};")
         f.flush()
         result = subprocess.run(
-            f"stack run monadic-parser-exe {f.name}",
+            f"stack run {EXECUTABLE} {f.name}",
             shell=True,
             check=True,
             stdout=subprocess.PIPE,

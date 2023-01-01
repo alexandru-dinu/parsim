@@ -1,6 +1,6 @@
-name:                monadic-parser
+name:                parsim
 version:             0.1.0.0
-github:              "alexandru-dinu/monadic-parser"
+github:              "alexandru-dinu/parsim"
 license:             MIT
 author:              "Alexandru Dinu"
 maintainer:          "example@example.com"
@@ -16,7 +16,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/alexandru-dinu/monadic-parser#readme>
+description:         Please see the README on GitHub at <https://github.com/alexandru-dinu/parsim#readme>
 
 dependencies:
 - base >= 4.7 && < 5
@@ -36,7 +36,7 @@ library:
   source-dirs: src
 
 executables:
-  monadic-parser-exe:
+  parsim-exe:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
@@ -44,10 +44,10 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - monadic-parser
+    - parsim
 
 tests:
-  monadic-parser-test:
+  parsim-test:
     main:                Test.hs
     source-dirs:         tests
     ghc-options:
@@ -55,7 +55,7 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - monadic-parser
+    - parsim
     - HUnit
     - Glob
     - text

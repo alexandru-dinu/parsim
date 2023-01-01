@@ -4,11 +4,11 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 
-name:           monadic-parser
+name:           parsim
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/alexandru-dinu/monadic-parser#readme>
-homepage:       https://github.com/alexandru-dinu/monadic-parser#readme
-bug-reports:    https://github.com/alexandru-dinu/monadic-parser/issues
+description:    Please see the README on GitHub at <https://github.com/alexandru-dinu/parsim#readme>
+homepage:       https://github.com/alexandru-dinu/parsim#readme
+bug-reports:    https://github.com/alexandru-dinu/parsim/issues
 author:         Alexandru Dinu
 maintainer:     example@example.com
 copyright:      2020 Alexandru Dinu
@@ -20,7 +20,7 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/alexandru-dinu/monadic-parser
+  location: https://github.com/alexandru-dinu/parsim
 
 library
   exposed-modules:
@@ -29,7 +29,7 @@ library
       Runner
       Types
   other-modules:
-      Paths_monadic_parser
+      Paths_parsim
   hs-source-dirs:
       src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
@@ -37,24 +37,24 @@ library
       base >=4.7 && <5
   default-language: Haskell2010
 
-executable monadic-parser-exe
+executable parsim-exe
   main-is: Main.hs
   other-modules:
-      Paths_monadic_parser
+      Paths_parsim
   hs-source-dirs:
       app
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
-    , monadic-parser
+    , parsim
   default-language: Haskell2010
 
-test-suite monadic-parser-test
+test-suite parsim-test
   type: exitcode-stdio-1.0
   main-is: Test.hs
   other-modules:
       TestUtils
-      Paths_monadic_parser
+      Paths_parsim
   hs-source-dirs:
       tests
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
@@ -62,6 +62,6 @@ test-suite monadic-parser-test
       Glob
     , HUnit
     , base >=4.7 && <5
-    , monadic-parser
+    , parsim
     , text
   default-language: Haskell2010

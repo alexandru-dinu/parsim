@@ -1,4 +1,4 @@
-PROJECT_NAME=monadic-parser
+PROJECT_NAME=parsim
 INPUT=
 
 .PHONY: build run hindent hlint test clean

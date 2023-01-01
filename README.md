@@ -1,9 +1,10 @@
-# Monadic Parser
+# Parsim
 
-[![Build](https://github.com/alexandru-dinu/monadic-parser/actions/workflows/build.yml/badge.svg)](https://github.com/alexandru-dinu/monadic-parser/actions/workflows/build.yml)
+[![Build](https://github.com/alexandru-dinu/parsim/actions/workflows/build.yml/badge.svg)](https://github.com/alexandru-dinu/parsim/actions/workflows/build.yml)
 
-Monadic parser for a simple imperative language.
-Implemented mainly to study {functors, applicatives, monads} and to set up a proper haskell project.
+Parsim is a monadic **par**ser for a **sim**ple **im**perative language.
+
+Implemented to study {functors, applicatives, monads}.
 
 ## Grammar
 ```
